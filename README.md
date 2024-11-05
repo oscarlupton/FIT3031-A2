@@ -1,14 +1,14 @@
 ## Prologue
 This is the final assignment for FIT3031, in Semester 2 2024, written by Oscar Lupton. GitHub Copilot and Microsoft 365 Copilot for Enterprise were used for diagnosing issues with my VM, and for assisting with testing my configurations.
 ## 2 - Submission policy
-![[Pasted image 20241106000523.png]]
-![[Pasted image 20241106001647.png]]
+![[images/Pasted image 20241106000523.png]]
+![[images/Pasted image 20241106001647.png]]
 `ded71fd4b4966d7323586274b941780a55ded6b4` (with errors?)
 ## 3 - Scenario
 33979375 mod 3 = 1 = Clayton. Primary DC = Clayton.
 ## 4 - Secure network design and implementation <12 marks>
 ### Topology
-![[Pasted image 20241104200847.png]]
+![[images/Pasted image 20241104200847.png]]
 **Clayton**: 10.200.10.0/24, gateway at 192.168.122.200 (WAN), 10.200.10.1 (LAN)
 - Primary DC is here.
 - `CLA-SERVER-01` at 10.200.10.3 (static)
@@ -23,7 +23,7 @@ This is the final assignment for FIT3031, in Semester 2 2024, written by Oscar L
 - Add Ubuntu VM to ISP switch. Client static IP config `192.168.122.203`, netmask `255.255.255.0`, gateway `192.168.122.1`, nameserver `8.8.8.8`.
 - Install essential packages (`iproute2`, `ssh`, `lynx`, etc.)
 ### `CLAYTON` router
-```cs
+```
 //NAT traversal for services
 /ip firewall nat print //`ip firewall nat remove` existing records if applicable
 /ip firewall nat add action=masquerade chain=srcnat out-interface=ether1 //masquerade for LAN->Internet access
@@ -184,9 +184,8 @@ root@CLA-SERVER-01:/# telnet 33979375.com 25
 [...] //terminal should read "Postfix ESMTP" or similar
 ```
 ## 5 - BGP <10 marks>
-(note: I couldn't get it to work)
 ### Configuration
-```cs
+```
 /routing bgp export
 /routing bgp peer print
 
@@ -208,9 +207,9 @@ root@CLA-SERVER-01:/# telnet 33979375.com 25
 /routing bgp peer add name=CLA remote-address=192.168.122.200 remote-as=3001 comment=CLA
 /routing bgp peer add name=PLA remote-address=192.168.122.201 remote-as=3002 comment=PEN
 ```
-![[Pasted image 20241103183135.png]]
-![[Pasted image 20241103183215.png]]
-![[Pasted image 20241103183221.png]]
+![[images/Pasted image 20241103183135.png]]
+![[images/Pasted image 20241103183215.png]]
+![[images/Pasted image 20241103183221.png]]
 ### Hijack
 Tap all router links with Wireshark. Objective: use Peninsula router to hijack Clayton ASN. Caulfield connection will be disrupted.
 ```
@@ -229,7 +228,7 @@ This works because `PENINSULA` (an AS) announces the same address as `CLAYTON` b
 ```
 ## 6 - VPN <15 marks>
 ### `CLAYTON` configuration <3 marks for showing traffic on Wireshark>
-```bash
+```
 /ip ipsec profile add name="Intercampus" hash-algorithm=sha256 enc-algorithm=aes-256 dh-group=modp2048 lifetime=1d
 /ip ipsec proposal add name="Intercampus" auth-algorithms=sha256 enc-algorithms=aes-256-gcm lifetime=8h
 
@@ -249,7 +248,7 @@ This works because `PENINSULA` (an AS) announces the same address as `CLAYTON` b
 	proposal=Intercampus peer=CAU
 	tunnel=yes action=encrypt level=require ipsec-protocols=esp
 ```
-![[Pasted image 20241103183927.png]]
+![[images/Pasted image 20241103183927.png]]
 ### `PENINSULA` config <3 marks for showing traffic on Wireshark>
 ```bash
 /ip ipsec profile add name="Intercampus" hash-algorithm=sha256 enc-algorithm=aes-256 dh-group=modp2048 lifetime=1d
@@ -264,7 +263,7 @@ This works because `PENINSULA` (an AS) announces the same address as `CLAYTON` b
 /ip ipsec policy add comment="CAU-bound traffic over VPN" src-address=10.201.10.0/24 dst-address=10.202.10.0/24 proposal=Intercampus peer=CAU tunnel=yes action=encrypt level=require ipsec-protocols=esp
 ```
 ### `CAULFIELD` config <3 marks for showing traffic on Wireshark>
-```bash
+```
 /ip ipsec profile add name="Intercampus" hash-algorithm=sha256 enc-algorithm=aes-256 dh-group=modp2048 lifetime=1d
 /ip ipsec proposal add name="Intercampus" enc-algorithms=aes-256-gcm lifetime=8h
 
@@ -327,9 +326,9 @@ Rules (33979375 mod 4 = 3):
 
 /ip firewall filter print
 ```
-![[Pasted image 20241105021031.png]]
+![[images/Pasted image 20241105021031.png]]
 ### `PENINSULA` config
-```bash
+```
 /ip firewall nat add action=masquerade chain=srcnat out-interface=ether1 comment="NAT masq"
 /ip firewall filter add chain=input action=accept protocol=udp dst-port=500,4500 comment="IKE, NAT-T"
 /ip firewall filter add chain=input action=accept protocol=ipsec-esp comment="IPsec ESP"
@@ -348,9 +347,9 @@ Rules (33979375 mod 4 = 3):
 
 /ip firewall filter print
 ```
-![[Pasted image 20241105022421.png]]
+![[images/Pasted image 20241105022421.png]]
 ### `CAULFIELD` config
-```bash
+```
 /ip firewall nat add action=masquerade chain=srcnat out-interface=ether1 comment="NAT masq"
 
 /ip firewall filter add chain=input action=accept protocol=udp dst-port=500,4500 comment="IKE, NAT-T"
@@ -370,7 +369,7 @@ Rules (33979375 mod 4 = 3):
 
 /ip firewall filter print
 ```
-![[Pasted image 20241105021548.png]]
+![[images/Pasted image 20241105021548.png]]
 ## 8 - Security analysis <12 marks>
 ### Can the firewall configuration be bypassed? <6 Marks>
 Yes.
