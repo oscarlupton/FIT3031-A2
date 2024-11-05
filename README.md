@@ -1,7 +1,7 @@
 ## Prologue
 This is the final assignment for FIT3031, in Semester 2 2024, written by Oscar Lupton. GitHub Copilot and Microsoft 365 Copilot for Enterprise were used for diagnosing issues with my VM, and for assisting with testing my configurations.
 ## 2 - Submission policy
-![compression](./images/Pasted image 20241106000523.png)
+![compression](images/Pasted image 20241106000523.png)
 ![[images/Pasted image 20241106001647.png]]
 `ded71fd4b4966d7323586274b941780a55ded6b4` (with errors?)
 ## 3 - Scenario
